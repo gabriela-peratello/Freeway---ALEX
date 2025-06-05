@@ -5,6 +5,17 @@ from jogador import Jogador
 from inimigo import Inimigos
 from bonus import Bonus
 
+#FUNÇÃO PARA TRANSIÇÃO
+def fade_out_in(tela, imagem_fundo, cor=(0, 0, 0)):
+    fade = gp.Surface((1920, 1000))
+    fade.fill(cor)
+    for alpha in range(0, 255, 15):
+        tela.blit(imagem_fundo, (0, 0))  # ← Redesenha o fundo antes de aplicar o fade
+        fade.set_alpha(alpha)
+        tela.blit(fade, (0, 0))
+        gp.display.update()
+        gp.time.delay(12)
+
 #Iniciar
 gp.init()
 timer = gp.time.Clock() 
@@ -51,10 +62,10 @@ lista_bonus = [Bonus("Ricks/picles.png",200,200),
                Bonus("Ricks/arma.png",200,200),
                Bonus("Ricks/portal.png",200,200)]
 
-#estado
+#estado e outros
 estado = "inicio"
-aumento = 0
-ativo = False
+poder_ativo = False
+tempo_ativado = 0
 
 
 #CONTROLAR A JANELA
@@ -67,14 +78,20 @@ while not fj:
 
     if estado == "inicio":
       tela.blit(menu, (0,0))
+      gp.display.update()
+
       teclas = gp.key.get_pressed() 
       if teclas [gp.K_SPACE]:
+         fade_out_in(tela, menu)
          estado = "tutorial"
     
     elif estado == "tutorial":
       tela.blit(tutorial, (0,0))
+      gp.display.update()
+
       teclas = gp.key.get_pressed() 
       if teclas [gp.K_a]:
+         fade_out_in(tela, tutorial)
          estado = "jogando"
     
     elif estado == "jogando":
@@ -100,27 +117,34 @@ while not fj:
                 bonus.px = random.randint(0, 1920 - bonus.lar)
 
         #PODER ESPECIAL        
-        teclas = gp.key.get_pressed()
-        if teclas[gp.K_s] and not ativo:
-            rick.velocidade = 15
-            aumento = time.time()
-            ativo = True
+        teclas = gp.key.get_pressed() 
+        if teclas[gp.K_s] and not poder_ativo:
+         velocidade = 12
+         tempo_ativado = gp.time.get_ticks()  # Tempo atual em milissegundos
+         poder_ativo = True
 
-        if ativo and time.time() - aumento >= 3:
-            rick.velocidade = 5
-            ativo = False
+            # Verificar se passou 3 segundos (3000 milissegundos)
+        if poder_ativo and gp.time.get_ticks() - tempo_ativado > 3000:
+            velocidade = 5
+            poder_ativo = False
+                
+                        
 
-        pontuacao = pontos.render(f"PONTOS:{rick.pontuacao}", True, (0,255,127), (240,255,240)) #fora do for, pq se dentro so aparece qndo encosta
+        pontuacao = pontos.render(f"PONTOS:{rick.pontuacao}", True, (139,0,139), (240,255,240)) #fora do for, pq se dentro so aparece qndo encosta
         tela.blit(pontuacao, (0,0))
 
     elif estado == "FIM":
        tela.blit(perdeu, (0,0))
-       pontuacao = pontos.render(f"{rick.pontuacao}", True, (0,255,127), False)
+       pontuacao = pontos.render(f"{rick.pontuacao}", True, (139,0,139), None)
        tela.blit(pontuacao, (960, 650))
        teclas = gp.key.get_pressed()
        if teclas [gp.K_d]:
         time.sleep(0.5)
         estado = "inicio"
+        rick.pontuacao = 0  # Zera a pontuação
+        rick.velocidade = 5  # Reseta a velocidade
+        ativo = False
+        gp.mixer.music.play(-1) 
     #COMITAR
    
         

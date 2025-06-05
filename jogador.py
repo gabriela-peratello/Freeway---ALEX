@@ -22,7 +22,8 @@ class Jogador:
         self.pontuacao = 0
 
         #VELOCIDADE
-        self.velocidade = 3
+        self.velocidade = 5
+        
 
 
     def movimento (self, direita, esquerda,baixo,cima):

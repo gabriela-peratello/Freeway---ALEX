@@ -25,7 +25,7 @@ class Bonus:
         self.px = random.choice(self.linha)
         
         #VELOCIDADE
-        self.velocidade = random.randint(0,4) 
+        self.velocidade = random.randint(0, 10) 
     
     def desenha_bonus(self, tela):
         tela.blit(self.imagem,(self.px,self.py))
@@ -34,5 +34,5 @@ class Bonus:
         self.py += self.velocidade
         if self.py > 1000:
             self.py = self.iny
-            self.velocidade = random.randint(0,4)
+            self.velocidade = random.randint(0, 10)
             self.px = random.choice(self.linha)
