@@ -121,7 +121,7 @@ while not fj:
        if teclas [gp.K_d]:
         time.sleep(0.5)
         estado = "inicio"
-    
+    #COMITAR
    
         
     #ATUALIZAR A TELA
