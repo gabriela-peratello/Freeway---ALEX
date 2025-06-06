@@ -25,7 +25,7 @@ class Inimigos:
         self.px = random.choice(self.linha)
         
         #VELOCIDADE
-        self.velocidade = random.randint(0,11) 
+        self.velocidade = random.randint(0,6) 
 
     #DESENHA OS MORTYS
     def desenho_morty(self, tela):
@@ -36,5 +36,5 @@ class Inimigos:
         self.py += self.velocidade
         if self.py > 1000:
             self.py = self.iny
-            self.velocidade = random.randint(0,11)
+            self.velocidade = random.randint(3,6)
             self.px = random.choice(self.linha)

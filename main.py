@@ -10,7 +10,7 @@ def fade_out_in(tela, imagem_fundo, cor=(0, 0, 0)):
     fade = gp.Surface((1920, 1000))
     fade.fill(cor)
     for alpha in range(0, 255, 15):
-        tela.blit(imagem_fundo, (0, 0))  # ← Redesenha o fundo antes de aplicar o fade
+        tela.blit(imagem_fundo, (0, 0))  #Redesenha o fundo antes de aplicar o fade
         fade.set_alpha(alpha)
         tela.blit(fade, (0, 0))
         gp.display.update()
@@ -28,13 +28,16 @@ gp.mixer.music.load("sons/mtema.mp3")
 gp.mixer.music.set_endevent(gp.USEREVENT) #repetição som de fundo
 gp.mixer.music.play() #inicia a reprodução
 
+#EFEITOS SONOROS
+som_colisao = gp.mixer.Sound("sons/tiro.mp3")
+som_bonus = gp.mixer.Sound("sons/wubba.mp3")
 
 #TELA INICIAL
 menu = gp.image.load("fundo/pagini.png") #tras imagem
 menu = gp.transform.scale(menu, (1920,1000)) #transforma
 
 #TELA DE TUTORIAL
-tutorial = gp.image.load("fundo/tuto2.png")
+tutorial = gp.image.load("fundo/tuto4.png")
 tutorial = gp.transform.scale(tutorial,(1920,1000))
 
 #TELA PRINCIPAL (CENÁRIO)
@@ -45,11 +48,15 @@ cenario = gp.transform.scale(cenario,(1920,1000))
 perdeu = gp.image.load("fundo/perdeu3.png")
 perdeu = gp.transform.scale(perdeu, (1920,1033))
 
+#TELA DE VITORIA
+ganho = gp.image.load("fundo/ganho.png")
+ganho = gp.transform.scale(ganho, (1920,1033))
+
 #PONTUAÇÃO NA TELA
-pontos = gp.font.SysFont("Bahnschrift", 45, True, False)
+pontos = gp.font.SysFont("Cooper Black", 45, True, False)
 
 #PERSONAGEM
-rick = Jogador("Ricks/rick.png",250,250,0,800)
+rick = Jogador("Ricks/rick.png",250,250,0,800, "sons/item.mp3")
 
 #MORTYS INIMIGOS
 lista_mortys = [Inimigos("Mortys/esquisito.png",150,150),
@@ -104,48 +111,58 @@ while not fj:
         for morty in lista_mortys:
          morty.movimento_morty()
          morty.desenho_morty(tela) #DESENHA OS MORTYS
-
+         
          if rick.mask.overlap(morty.mask, (morty.px - rick.px, morty.py - rick.py)):
+                som_colisao.play()
                 estado = "FIM"
 
         for bonus in lista_bonus: #PERCORRE A LISTA BONUS
               bonus.movimento_bonus()
               bonus.desenha_bonus(tela)
               if rick.mask.overlap(bonus.mask, (bonus.px - rick.px, bonus.py - rick.py)):
+                som_bonus.play()
                 rick.pontuacao += 5
                 bonus.py = -bonus.alt
                 bonus.px = random.randint(0, 1920 - bonus.lar)
+        
+        pontuacao = pontos.render(f"PONTOS: {rick.pontuacao}", True, (139,0,139), None) #fora do for, pq se dentro so aparece qndo encosta
+        tela.blit(pontuacao, (850,50))
 
-        #PODER ESPECIAL        
-        teclas = gp.key.get_pressed() 
-        if teclas[gp.K_s] and not poder_ativo:
-         velocidade = 12
-         tempo_ativado = gp.time.get_ticks()  # Tempo atual em milissegundos
-         poder_ativo = True
+    # Poder especial para o Rick
+    teclas = gp.key.get_pressed()
 
-            # Verificar se passou 3 segundos (3000 milissegundos)
-        if poder_ativo and gp.time.get_ticks() - tempo_ativado > 3000:
-            velocidade = 5
-            poder_ativo = False
-                
-                        
+    # Ativar o poder (tecla S)
+    if teclas[gp.K_s] and not poder_ativo:
+        rick.velocidade = 20  # Aumenta a velocidade do Rick (ajuste conforme necessário)
+        tempo_ativado = gp.time.get_ticks()  # Marca o tempo que o poder foi ativado
+        poder_ativo = True
 
-        pontuacao = pontos.render(f"PONTOS:{rick.pontuacao}", True, (139,0,139), (240,255,240)) #fora do for, pq se dentro so aparece qndo encosta
-        tela.blit(pontuacao, (0,0))
+    # Desativar o poder após 3 segundos
+    if poder_ativo and gp.time.get_ticks() - tempo_ativado > 3000:
+        rick.velocidade = 5  # Restaura a velocidade normal do Rick
+        poder_ativo = False          
 
     elif estado == "FIM":
        tela.blit(perdeu, (0,0))
        pontuacao = pontos.render(f"{rick.pontuacao}", True, (139,0,139), None)
        tela.blit(pontuacao, (960, 650))
+
        teclas = gp.key.get_pressed()
        if teclas [gp.K_d]:
-        time.sleep(0.5)
-        estado = "inicio"
+        estado = "jogando"
         rick.pontuacao = 0  # Zera a pontuação
         rick.velocidade = 5  # Reseta a velocidade
+        rick.px = 0 #reseta posição rick
+        rick.py = 800 #reseta posição rick
         ativo = False
         gp.mixer.music.play(-1) 
-    #COMITAR
+        for morty in lista_mortys:
+                morty.px = random.randint(0, 1920 - morty.lar)
+                morty.py = random.randint(-500, -100) # Reaparece acima da tela
+
+        for bonus in lista_bonus:
+            bonus.px = random.randint(0, 1920 - bonus.lar)
+            bonus.py = random.randint(-800, -300) # Reaparece acima da tela
    
         
     #ATUALIZAR A TELA
