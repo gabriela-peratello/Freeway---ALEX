@@ -1,9 +1,12 @@
 import pygame as gp
 import time
 import random
+from relativo import caminho_relativo
 from jogador import Jogador
 from inimigo import Inimigos
 from bonus import Bonus
+
+
 
 #FUNÇÃO PARA TRANSIÇÃO
 def fade_out_in(tela, imagem_fundo, cor=(0, 0, 0)):
@@ -24,50 +27,50 @@ timer = gp.time.Clock()
 tela = gp.display.set_mode((1920,1000)) #tela + medida
 
 #CRIAÇÃO MUSICA
-gp.mixer.music.load("sons/mtema.mp3") 
+gp.mixer.music.load(caminho_relativo("sons/mtema.mp3")) 
 gp.mixer.music.set_endevent(gp.USEREVENT) #repetição som de fundo
 gp.mixer.music.play() #inicia a reprodução
 
 #EFEITOS SONOROS
-som_colisao = gp.mixer.Sound("sons/tiro.mp3")
-som_bonus = gp.mixer.Sound("sons/wubba.mp3")
+som_colisao = gp.mixer.Sound(caminho_relativo("sons/tiro.mp3"))
+som_bonus = gp.mixer.Sound(caminho_relativo("sons/wubba.mp3"))
 
 #TELA INICIAL
-menu = gp.image.load("fundo/pagini.png") #tras imagem
+menu = gp.image.load(caminho_relativo("fundo/pagini.png")) #tras imagem
 menu = gp.transform.scale(menu, (1920,1000)) #transforma
 
 #TELA DE TUTORIAL
-tutorial = gp.image.load("fundo/tuto4.png")
+tutorial = gp.image.load(caminho_relativo("fundo/tuto4.png"))
 tutorial = gp.transform.scale(tutorial,(1920,1000))
 
 #TELA PRINCIPAL (CENÁRIO)
-cenario = gp.image.load("fundo/garagem.png")
+cenario = gp.image.load(caminho_relativo("fundo/garagem.png"))
 cenario = gp.transform.scale(cenario,(1920,1000)) 
 
 #TELA GAME OVER
-perdeu = gp.image.load("fundo/perdeu3.png")
+perdeu = gp.image.load(caminho_relativo("fundo/perdeu3.png"))
 perdeu = gp.transform.scale(perdeu, (1920,1033))
 
 #TELA DE VITORIA
-ganho = gp.image.load("fundo/ganho.png")
+ganho = gp.image.load(caminho_relativo("fundo/ganho.png"))
 ganho = gp.transform.scale(ganho, (1920,1033))
 
 #PONTUAÇÃO NA TELA
 pontos = gp.font.SysFont("Cooper Black", 45, True, False)
 
 #PERSONAGEM
-rick = Jogador("Ricks/rick.png",250,250,0,800, "sons/item.mp3")
+rick = Jogador(caminho_relativo("Ricks/rick.png"),250,250,0,800, caminho_relativo("sons/item.mp3"))
 
 #MORTYS INIMIGOS
-lista_mortys = [Inimigos("Mortys/esquisito.png",150,150),
-                Inimigos("Mortys/gato.png",200,200),
-                Inimigos("Mortys/cartola.png",200,200),
-                Inimigos("Mortys/coitadinho.png",200,200)]
+lista_mortys = [Inimigos(caminho_relativo("Mortys/esquisito.png"),150,150),
+                Inimigos(caminho_relativo("Mortys/gato.png"),200,200),
+                Inimigos(caminho_relativo("Mortys/cartola.png"),200,200),
+                Inimigos(caminho_relativo("Mortys/coitadinho.png"),200,200)]
 
 #ITENS BONUS
-lista_bonus = [Bonus("Ricks/picles.png",200,200),
-               Bonus("Ricks/arma.png",200,200),
-               Bonus("Ricks/portal.png",200,200)]
+lista_bonus = [Bonus(caminho_relativo("Ricks/picles.png"),200,200),
+               Bonus(caminho_relativo("Ricks/arma.png"),200,200),
+               Bonus(caminho_relativo("Ricks/portal.png"),200,200)]
 
 #estado e outros
 estado = "inicio"
@@ -104,7 +107,7 @@ while not fj:
     elif estado == "jogando":
         tela.blit(cenario, (0, 0))
         tela.blit(rick.imagem, (rick.px, rick.py)) #comeca nas posições iniciais
-        rick.movimento(gp.K_RIGHT, gp.K_LEFT, gp.K_DOWN, gp.K_UP) #movimentar rick
+        rick.movimento(gp.K_RIGHT, gp.K_LEFT) #movimentar rick
 
         
         #PRECISA PERCORRER A LISTA (FOR)

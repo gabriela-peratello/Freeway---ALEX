@@ -27,7 +27,7 @@ class Jogador:
         #EFEITO SONORO
         self.som = gp.mixer.Sound(local_som)
         
-    def movimento (self, direita, esquerda,baixo,cima):
+    def movimento (self, direita, esquerda):
             teclas = gp.key.get_pressed() #lista as teclas apertadas
             if teclas[direita]:
                 if self.px < (1920 - self.largura):
@@ -35,10 +35,5 @@ class Jogador:
             if teclas[esquerda]:
                 if self.px > 0:
                     self.px -= 4
-            if teclas[cima]:
-                if self.py > 590:
-                    self.py -= 4
-            if teclas[baixo]:
-                if self.py < (1000 - self.altura):
-                    self.py += 4
+            
             
